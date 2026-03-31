@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/calendar/calendar"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#F5F5F7",
+    "navigationBarTitleText": "MyCNCalendar",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

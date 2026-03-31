@@ -1,0 +1,127 @@
+<view class="calendar-container">
+  <view class="header-section">
+    <view class="year-month-selector" bindtap="showDatePicker">
+      <text class="year-month-title">{{currentYear}}年 {{currentMonth}}月</text>
+      <text class="arrow-down">▾</text>
+    </view>
+    <view class="action-btn" catchtap="backToToday">回到今天</view>
+  </view>
+
+  <view class="week-header">
+    <view class="week-item {{item === '日' || item === '六' ? 'weekend' : ''}}" wx:for="{{weekDays}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <swiper class="month-swiper" circular="true" current="{{swiperCurrent}}" bindchange="handleSwiperChange">
+    <swiper-item wx:for="{{swiperData}}" wx:key="id" wx:for-item="monthData">
+      <view class="days-grid">
+        <view 
+          class="day-cell {{dayItem.type !== 'current' ? 'disabled' : ''}} {{dayItem.isToday ? 'today' : ''}} {{dayItem.isWeekend ? 'weekend' : ''}}"
+          wx:for="{{monthData.days}}" 
+          wx:key="date"
+          wx:for-item="dayItem"
+          bindtap="onTapDay"
+          data-date="{{dayItem.date}}"
+        >
+          <view class="day-bg {{selectedDate === dayItem.date ? 'selected-bg' : ''}}"></view>
+          <text class="day-num {{selectedDate === dayItem.date ? 'selected-text' : ''}}">{{dayItem.day}}</text>
+          <text class="day-lunar {{dayItem.holiday ? 'holiday-text' : ''}} {{selectedDate === dayItem.date ? 'selected-text' : ''}}">{{dayItem.holiday || dayItem.lunar}}</text>
+          
+          <view wx:if="{{dayItem.workStatus === 'work'}}" class="work-badge">班</view>
+          <view wx:if="{{dayItem.workStatus === 'rest'}}" class="rest-badge">休</view>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+  
+  <scroll-view class="detail-card" scroll-y="true">
+    <view class="card-header">
+      <text class="card-date">{{selectedDate}}</text>
+      <text class="card-nongli">农历 {{selectedDetail.lunar.lunarMonthStr}}{{selectedDetail.lunar.lunarDayStr}}</text>
+    </view>
+    <view class="card-body">
+      <view class="info-row">
+        <text class="info-label">岁次：</text>
+        <text class="info-value">{{selectedDetail.lunar.gzYear}}年 【生肖{{selectedDetail.lunar.animal}}】 {{selectedDetail.lunar.gzMonth}}月 {{selectedDetail.lunar.gzDay}}日</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">全球节假：</text>
+        <view class="info-value">
+          <text class="{{selectedDetail.holiday.cnHoliday ? 'highlight' : ''}}">{{selectedDetail.holiday.cnHoliday || '无'}}</text>
+          <text wx:if="{{selectedDetail.holiday.usHoliday}}" class="highlight"> / {{selectedDetail.holiday.usHoliday}}</text>
+          <text wx:if="{{selectedDetail.holiday.brHoliday}}" class="highlight"> / {{selectedDetail.holiday.brHoliday}}</text>
+        </view>
+      </view>
+      <view class="info-row">
+        <text class="info-label">考勤建议：</text>
+        <text class="info-value {{selectedDetail.holiday.cnStatus === 'work' ? 'highlight' : ''}}">{{selectedDetail.holiday.cnStatus === 'rest' ? '法定放假中 🏖️' : (selectedDetail.holiday.cnStatus === 'work' ? '法定周末补班 💼' : '正常工作日')}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="pto-entry-btn" bindtap="openPTO">
+    <text>✈️ 开启多国连休(PTO)请假攻略</text>
+  </view>
+
+  <view class="picker-mask {{showPicker || showPTO ? 'picker-mask-show' : ''}}" catchtap="hideAllPopups"></view>
+
+  <view class="picker-popup {{showPicker ? 'picker-popup-show' : ''}}">
+    <view class="picker-header">
+      <view class="picker-btn cancel" catchtap="hideAllPopups">取消</view>
+      <view class="picker-title">选择年月</view>
+      <view class="picker-btn confirm" catchtap="confirmDate">确定</view>
+    </view>
+    
+    <picker-view 
+      class="custom-picker" 
+      indicator-class="picker-indicator"
+      value="{{pickerValue}}"
+      bindchange="onPickerChange"
+    >
+      <picker-view-column>
+        <view class="picker-item" wx:for="{{years}}" wx:key="*this">{{item}}年</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="picker-item" wx:for="{{months}}" wx:key="*this">{{item}}月</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <view class="pto-popup {{showPTO ? 'pto-popup-show' : ''}}">
+    <view class="picker-header">
+      <view class="picker-btn cancel" catchtap="hideAllPopups">关闭</view>
+      <view class="picker-title">年假测算系统</view>
+      <view class="picker-btn"></view>
+    </view>
+    
+    <view class="pto-content">
+      <view class="segment-control">
+        <view class="segment-item {{ptoRegion === 'CN' ? 'active' : ''}}" bindtap="changeRegion" data-region="CN">🇨🇳 国区</view>
+        <view class="segment-item {{ptoRegion === 'US' ? 'active' : ''}}" bindtap="changeRegion" data-region="US">🇺🇸 美区</view>
+        <view class="segment-item {{ptoRegion === 'BR' ? 'active' : ''}}" bindtap="changeRegion" data-region="BR">🇧🇷 巴区</view>
+      </view>
+
+      <view class="date-range-box">
+        <picker mode="date" value="{{ptoStart}}" bindchange="onPTOStartChange">
+          <view class="date-block">
+            <text class="date-label">出发起始</text>
+            <text class="date-value">{{ptoStart}}</text>
+          </view>
+        </picker>
+        <view class="date-arrow">➡</view>
+        <picker mode="date" value="{{ptoEnd}}" bindchange="onPTOEndChange">
+          <view class="date-block">
+            <text class="date-label">返岗前日</text>
+            <text class="date-value">{{ptoEnd}}</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="calc-btn" bindtap="triggerCalcPTO">开始智能核算损失</view>
+
+      <view class="result-box" wx:if="{{ptoResult}}">
+        <view class="result-number">需请 <text class="big-num">{{ptoResult.ptoDays}}</text> 天年休假</view>
+        <view class="result-desc">自然周期 {{ptoResult.totalDays}} 天，您已成功规避 {{ptoResult.totalDays - ptoResult.ptoDays}} 天非工作日的带薪扣减损失。</view>
+      </view>
+    </view>
+  </view>
+</view>
