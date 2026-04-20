@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="header">
+    <view class="app-logo">📅</view>
+    <view class="app-name">{{appName}}</view>
+    <view class="app-ver">{{version}}</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">核心功能</view>
+    <view class="feature-list">
+      <view class="feature-item" wx:for="{{features}}" wx:key="*this">
+        <icon type="success" size="14" color="#34C759" />
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text>© 2026 Webber Gemini Deepseek Project</text>
+  </view>
+</view>

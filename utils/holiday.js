@@ -3,7 +3,7 @@
  */
 const LunarUtils = require('./lunar.js');
 
-const HolidayInfo = {
+let HolidayInfo = {
   "巴西": {
     "2025": { holidays: ['01-01', '01-28', '01-29', '01-30', '01-31', '04-04', '05-01', '05-02', '05-30', '09-30', '10-01', '10-02', '10-03'], extraWorkdays: [] },
     "2026": { holidays: ['01-01', '02-16', '02-17', '02-18', '02-19', '04-06', '05-01', '05-04', '06-19', '09-25', '10-01', '10-02', '10-05'], extraWorkdays: [] }
@@ -17,6 +17,19 @@ const HolidayInfo = {
     "2026": { holidays: ['01-01', '02-16', '02-17', '02-18', '04-06', '05-01', '06-19', '10-01', '10-02', '10-05', '11-26', '11-27', '12-25'], extraWorkdays: [] }
   }
 };
+
+// Sync with Storage if available
+function syncWithStorage() {
+  const stored = wx.getStorageSync('customHolidayInfo');
+  if (stored) {
+    try {
+      HolidayInfo = typeof stored === 'string' ? JSON.parse(stored) : stored;
+    } catch (e) {
+      console.error('Failed to parse holiday info from storage', e);
+    }
+  }
+}
+syncWithStorage();
 
 const CN_FIXED = {
   "01-01": "元旦",
@@ -427,14 +440,22 @@ class HolidayEngine {
       else if (this._isSameDay(curDate, easter)) { result.brHoliday = "复活节"; result.brHolidayFull = "复活节(Páscoa，基督教纪念耶稣基督复活的节日,象征重生与希望)"; }
       else if (this._isSameDay(curDate, corpusChristi)) { result.brHoliday = "基督圣体节"; result.brHolidayFull = "基督圣体节(Corpus Christi,庆祝和纪念圣体圣事。)"; }
       else if (month === 5 && day === this._getNthDay(year, 5, 0, 2)) { result.brHoliday = "母亲节"; result.brHolidayFull = "母亲节(Dia das Mães)"; }
-      else if (month === 8 && day === this._getNthDay(year, 8, 0, 2)) { result.brHoliday = "父亲节"; result.brHolidayFull = "父亲节(Dia dos Pais)"; }
       else if (month === 11 && day === thanksgivingDay) { 
         result.brHoliday = "感恩节"; 
         result.brHolidayFull = "感恩节(Dia de Ação de Graças,受美国感恩节文化影响于1949年设立,侧重宗教仪式和家庭团聚)"; 
       }
     }
-
     return result;
+  }
+
+  getHolidayInfo() {
+    return HolidayInfo;
+  }
+
+  updateHolidayInfo(newInfo) {
+    if (!newInfo) return;
+    HolidayInfo = newInfo;
+    wx.setStorageSync('customHolidayInfo', newInfo);
   }
 }
 

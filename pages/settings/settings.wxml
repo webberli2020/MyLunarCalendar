@@ -1,0 +1,75 @@
+<view class="container">
+  <view class="section">
+    <view class="section-title">休假调休显示偏好</view>
+    <view class="pill-list">
+      <view 
+        class="pill-item {{selectedRegion === item.code ? 'active' : ''}}" 
+        wx:for="{{regions}}" 
+        wx:key="code"
+        bindtap="selectRegion"
+        data-code="{{item.code}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">每周起始日</view>
+    <view class="pill-list">
+      <view 
+        class="pill-item {{selectedWeekStart === item.value ? 'active' : ''}}" 
+        wx:for="{{weekStarts}}" 
+        wx:key="value"
+        bindtap="selectWeekStart"
+        data-val="{{item.value}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">三国休假数据配置 (JSON)</view>
+    
+    <view class="editor-selectors">
+      <picker bindchange="onCountryChange" value="{{0}}" range="{{availableCountries}}">
+        <view class="selector-item">
+          <text class="label">国家:</text>
+          <text class="value">{{editCountry}}</text>
+        </view>
+      </picker>
+
+      <picker bindchange="onYearChange" value="{{0}}" range="{{availableYears}}">
+        <view class="selector-item">
+          <text class="label">年份:</text>
+          <text class="value">{{editYear}}</text>
+        </view>
+      </picker>
+
+      <view class="add-year-btn" bindtap="addNewYear">＋ 新增年份</view>
+    </view>
+
+    <view class="editor-wrap">
+      <textarea 
+        class="json-editor" 
+        value="{{holidayInfoStr}}" 
+        maxlength="-1" 
+        bindinput="onHolidayInput"
+        auto-height="{{false}}"
+      />
+    </view>
+    <view class="btn-group main-btns">
+      <view class="save-btn" bindtap="saveHolidayInfo">保存数据并应用</view>
+    </view>
+    <view class="btn-group sub-btns">
+      <view class="action-btn-outline" bindtap="copyToClipboard">复制数据</view>
+      <view class="action-btn-outline" bindtap="importFromClipboard">剪贴板导入</view>
+      <view class="reset-btn" bindtap="resetHolidayInfo">恢复预设</view>
+    </view>
+  </view>
+
+  <view class="tip">注：手动修改 JSON 数据后请务必点击“保存”。格式错误将导致保存失败。</view>
+  
+  <view style="height: 100rpx;"></view>
+</view>

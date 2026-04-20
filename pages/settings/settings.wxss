@@ -1,0 +1,128 @@
+.container {
+  padding: 30rpx;
+  background-color: #F5F5F7;
+  min-height: 100vh;
+}
+.section {
+  background: white;
+  border-radius: 24rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+.section-title {
+  font-size: 26rpx;
+  color: #8E8E93;
+  padding: 30rpx 30rpx 10rpx;
+}
+.pill-list {
+  display: flex;
+  padding: 10rpx 30rpx 30rpx;
+  gap: 20rpx;
+}
+.pill-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 12rpx;
+  background: #F2F2F7;
+  color: #1C1C1E;
+  font-size: 28rpx;
+  border: 1rpx solid transparent;
+}
+.pill-item.active {
+  background: #E5F1FF;
+  color: #007AFF;
+  border: 1rpx solid #007AFF;
+  font-weight: 500;
+}
+.tip {
+  font-size: 24rpx;
+  color: #8E8E93;
+  padding: 20rpx 10rpx;
+  line-height: 1.4;
+}
+
+.editor-selectors {
+  display: flex;
+  padding: 10rpx 30rpx 20rpx;
+  gap: 15rpx;
+  align-items: center;
+}
+.selector-item {
+  background: #F2F2F7;
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+.selector-item .label {
+  color: #8E8E93;
+  margin-right: 10rpx;
+}
+.selector-item .value {
+  color: #007AFF;
+  font-weight: 600;
+}
+.add-year-btn {
+  font-size: 24rpx;
+  color: #007AFF;
+  padding: 15rpx 0;
+  flex: 1;
+  text-align: right;
+}
+
+.editor-wrap {
+  padding: 10rpx 30rpx;
+}
+.json-editor {
+  width: 100%;
+  height: 500rpx;
+  background: #F8F8F8;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-family: monospace;
+  font-size: 24rpx;
+  box-sizing: border-box;
+}
+.btn-group {
+  display: flex;
+  padding: 10rpx 30rpx 30rpx;
+  gap: 20rpx;
+}
+.main-btns {
+  padding-bottom: 5rpx;
+}
+.sub-btns {
+  padding-top: 5rpx;
+}
+.save-btn {
+  flex: 1;
+  background: #007AFF;
+  color: white;
+  text-align: center;
+  padding: 24rpx 0;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.action-btn-outline {
+  flex: 1;
+  background: white;
+  color: #007AFF;
+  border: 1rpx solid #007AFF;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+}
+.reset-btn {
+  flex: 1;
+  background: #FF3B30;
+  color: white;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+}
+.save-btn:active, .reset-btn:active { opacity: 0.7; }

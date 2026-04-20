@@ -58,11 +58,7 @@
     </view>
   </scroll-view>
 
-  <view class="pto-entry-btn" bindtap="openPTO">
-    <text>✈️ 开启多国连休(PTO)请假攻略</text>
-  </view>
-
-  <view class="picker-mask {{showPicker || showPTO ? 'picker-mask-show' : ''}}" catchtap="hideAllPopups"></view>
+  <view class="picker-mask {{showPicker ? 'picker-mask-show' : ''}}" catchtap="hideAllPopups"></view>
 
   <view class="picker-popup {{showPicker ? 'picker-popup-show' : ''}}">
     <view class="picker-header">
@@ -84,44 +80,5 @@
         <view class="picker-item" wx:for="{{months}}" wx:key="*this">{{item}}月</view>
       </picker-view-column>
     </picker-view>
-  </view>
-
-  <view class="pto-popup {{showPTO ? 'pto-popup-show' : ''}}">
-    <view class="picker-header">
-      <view class="picker-btn cancel" catchtap="hideAllPopups">关闭</view>
-      <view class="picker-title">年假测算系统</view>
-      <view class="picker-btn"></view>
-    </view>
-    
-    <view class="pto-content">
-      <view class="segment-control">
-        <view class="segment-item {{ptoRegion === 'CN' ? 'active' : ''}}" bindtap="changeRegion" data-region="CN">🇨🇳 国区</view>
-        <view class="segment-item {{ptoRegion === 'US' ? 'active' : ''}}" bindtap="changeRegion" data-region="US">🇺🇸 美区</view>
-        <view class="segment-item {{ptoRegion === 'BR' ? 'active' : ''}}" bindtap="changeRegion" data-region="BR">🇧🇷 巴区</view>
-      </view>
-
-      <view class="date-range-box">
-        <picker mode="date" value="{{ptoStart}}" bindchange="onPTOStartChange">
-          <view class="date-block">
-            <text class="date-label">出发起始</text>
-            <text class="date-value">{{ptoStart}}</text>
-          </view>
-        </picker>
-        <view class="date-arrow">➡</view>
-        <picker mode="date" value="{{ptoEnd}}" bindchange="onPTOEndChange">
-          <view class="date-block">
-            <text class="date-label">返岗前日</text>
-            <text class="date-value">{{ptoEnd}}</text>
-          </view>
-        </picker>
-      </view>
-
-      <view class="calc-btn" bindtap="triggerCalcPTO">开始智能核算损失</view>
-
-      <view class="result-box" wx:if="{{ptoResult}}">
-        <view class="result-number">需请 <text class="big-num">{{ptoResult.ptoDays}}</text> 天年休假</view>
-        <view class="result-desc">自然周期 {{ptoResult.totalDays}} 天，您已成功规避 {{ptoResult.totalDays - ptoResult.ptoDays}} 天非工作日的带薪扣减损失。</view>
-      </view>
-    </view>
   </view>
 </view>

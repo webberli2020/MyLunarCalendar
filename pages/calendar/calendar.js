@@ -27,17 +27,30 @@ Page({
     months: initMonths,
     showPicker: false,       
     pickerValue: [0, 0],     
-    tempPickerValue: [0, 0],  
+    tempPickerValue: [0, 0]
+  },
 
-    showPTO: false,
-    ptoRegion: 'CN',
-    ptoStart: '2026-02-15',
-    ptoEnd: '2026-02-22',
-    ptoResult: null
+  onShow() {
+    const region = wx.getStorageSync('selectedRegion') || 'BR';
+    const weekStart = wx.getStorageSync('weekStart') === 0 ? 0 : 1; 
+
+    if (this.data.selectedRegionCode !== region || this.data.weekStart !== weekStart) {
+      const weekDays = weekStart === 0 ? ['日', '一', '二', '三', '四', '五', '六'] : ['一', '二', '三', '四', '五', '六', '日'];
+      this.setData({ 
+        selectedRegionCode: region, 
+        weekStart: weekStart,
+        weekDays: weekDays
+      });
+      if (this.data._currentYear) {
+        this.refreshSwiperData(this.data._currentYear, this.data._currentMonth);
+      } else {
+        this.initCalendar(new Date()); 
+      }
+    }
   },
 
   onLoad() {
-    this.initCalendar(new Date()); 
+    // Initial data load handled in onShow
   },
 
   initCalendar(dateObj) {
@@ -78,12 +91,23 @@ Page({
 
   generateMonthData(year, month) {
     let days = [];
+    // getDay() is 0 for Sun, 1 for Mon...
     const firstDay = new Date(year, month - 1, 1).getDay();
+    const weekStart = this.data.weekStart; // 0 for Sun, 1 for Mon
+    
+    // Calculate how many empty cells to prepend
+    let emptyDays = 0;
+    if (weekStart === 0) { // Starts on Sun
+      emptyDays = firstDay;
+    } else { // Starts on Mon
+      emptyDays = firstDay === 0 ? 6 : firstDay - 1;
+    }
+
     const daysInMonth = new Date(year, month, 0).getDate();
     const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
     const todayStr = this.formatDate(new Date());
 
-    for (let i = firstDay - 1; i >= 0; i--) {
+    for (let i = emptyDays - 1; i >= 0; i--) {
       days.push(this.createDayNode(year, month - 1, daysInPrevMonth - i, 'prev', todayStr));
     }
 
@@ -117,11 +141,13 @@ Page({
     }
 
     let holiday = holidayMeta.cnHoliday || holidayMeta.usHoliday || holidayMeta.brHoliday || '';
+    const regionKey = (this.data.selectedRegionCode || 'BR').toLowerCase();
 
     return {
       date: dateStr, day: d, type: type,
       isWeekend, isToday: dateStr === todayStr,
-      lunar: uiLunar, holiday: holiday, workStatus: holidayMeta.cnStatus
+      lunar: uiLunar, holiday: holiday, 
+      workStatus: holidayMeta[regionKey + 'Status']
     };
   },
 
@@ -203,7 +229,7 @@ Page({
   },
 
   hideAllPopups() {
-    this.setData({ showPicker: false, showPTO: false });
+    this.setData({ showPicker: false });
   },
 
   onPickerChange(e) {
@@ -229,38 +255,5 @@ Page({
 
     this.refreshSwiperData(targetYear, targetMonth);
     this.updateDetailCard(targetYear, targetMonth, 1);
-  },
-
-  openPTO() {
-    this.setData({ 
-      showPTO: true,
-      ptoStart: this.data.selectedDate,
-      ptoEnd: this.data.selectedDate,
-      ptoResult: null 
-    });
-  },
-
-  changeRegion(e) {
-    this.setData({ 
-      ptoRegion: e.currentTarget.dataset.region,
-      ptoResult: null
-    });
-  },
-
-  onPTOStartChange(e) { this.setData({ ptoStart: e.detail.value, ptoResult: null }); },
-  onPTOEndChange(e) { this.setData({ ptoEnd: e.detail.value, ptoResult: null }); },
-
-  triggerCalcPTO() {
-    const { ptoStart, ptoEnd, ptoRegion } = this.data;
-    
-    const PTOUtils = require('../../utils/pto.js'); 
-    const result = PTOUtils.calculatePTO(ptoStart, ptoEnd, ptoRegion);
-    
-    if (result.error) {
-      wx.showToast({ title: result.error, icon: 'error', duration: 2000 });
-      return;
-    }
-    
-    this.setData({ ptoResult: result });
   }
 });

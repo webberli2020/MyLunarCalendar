@@ -1,12 +1,40 @@
 {
   "pages": [
-    "pages/calendar/calendar"
+    "pages/calendar/calendar",
+    "pages/settings/settings",
+    "pages/me/me"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#F5F5F7",
-    "navigationBarTitleText": "MyCNCalendar",
+    "navigationBarTitleText": "MyLunarCalendar",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#8E8E93",
+    "selectedColor": "#007AFF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "主页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home_active.png"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "配置",
+        "iconPath": "assets/icons/settings.png",
+        "selectedIconPath": "assets/icons/settings_active.png"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "text": "我",
+        "iconPath": "assets/icons/me.png",
+        "selectedIconPath": "assets/icons/me_active.png"
+      }
+    ]
   },
   "lazyCodeLoading": "requiredComponents",
   "style": "v2",
