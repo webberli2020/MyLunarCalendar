@@ -37,7 +37,7 @@ Page({
   },
 
   onLoad() {
-    this.initCalendar(new Date('2026-01-01')); 
+    this.initCalendar(new Date()); 
   },
 
   initCalendar(dateObj) {

@@ -185,6 +185,15 @@ page {
 .highlight {
   color: #FF3B30;
 }
+.holiday-cn {
+  color: #FF3B30; /* 赤红色 */
+}
+.holiday-us {
+  color: #007AFF; /* 联邦蓝色 */
+}
+.holiday-br {
+  color: #34C759; /* 森绿色 */
+}
 /* ================== Picker ================== */
 .picker-mask {
   position: fixed;

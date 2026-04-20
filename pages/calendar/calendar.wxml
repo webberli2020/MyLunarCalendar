@@ -46,9 +46,9 @@
       <view class="info-row">
         <text class="info-label">全球节假：</text>
         <view class="info-value">
-          <text class="{{selectedDetail.holiday.cnHoliday ? 'highlight' : ''}}">{{selectedDetail.holiday.cnHoliday || '无'}}</text>
-          <text wx:if="{{selectedDetail.holiday.usHoliday}}" class="highlight"> / {{selectedDetail.holiday.usHoliday}}</text>
-          <text wx:if="{{selectedDetail.holiday.brHoliday}}" class="highlight"> / {{selectedDetail.holiday.brHoliday}}</text>
+          <text class="{{selectedDetail.holiday.cnHolidayFull ? 'holiday-cn' : ''}}">{{selectedDetail.holiday.cnHolidayFull || '无'}}</text>
+          <text wx:if="{{selectedDetail.holiday.usHolidayFull}}" class="holiday-us"> / {{selectedDetail.holiday.usHolidayFull}}</text>
+          <text wx:if="{{selectedDetail.holiday.brHolidayFull}}" class="holiday-br"> / {{selectedDetail.holiday.brHolidayFull}}</text>
         </view>
       </view>
       <view class="info-row">
