@@ -13,7 +13,8 @@ Page({
       { name: '周日', value: 0 }
     ],
     selectedWeekStart: 1,
-    holidayInfoStr: '',
+    holidaysStr: '',
+    extraWorkdaysStr: '',
     editCountry: '中国',
     editYear: '2026',
     availableCountries: ['中国', '美国', '巴西'],
@@ -51,10 +52,12 @@ Page({
     if (!fullInfo[country][year]) fullInfo[country][year] = { holidays: [], extraWorkdays: [] };
     
     // Update available years list
-    const years = Object.keys(fullInfo[country]).sort((a, b) => b - a);
+    const years = Object.keys(fullInfo[country] || {}).sort((a, b) => b - a);
+    const data = fullInfo[country][year] || { holidays: [], extraWorkdays: [] };
     
     this.setData({ 
-      holidayInfoStr: JSON.stringify(fullInfo[country][year], null, 2),
+      holidaysStr: (data.holidays || []).join(' '),
+      extraWorkdaysStr: (data.extraWorkdays || []).join(' '),
       availableYears: years
     });
   },
@@ -96,14 +99,28 @@ Page({
     });
   },
 
-  onHolidayInput(e) {
-    this.setData({ holidayInfoStr: e.detail.value });
+  onHolidaysInput(e) {
+    this.setData({ holidaysStr: e.detail.value });
+  },
+
+  onExtraWorkdaysInput(e) {
+    this.setData({ extraWorkdaysStr: e.detail.value });
+  },
+
+  _parseDates(str) {
+    if (!str) return [];
+    // Split by any non-digit character sequences that are not hyphens, 
+    // but honestly just splitting by spaces, commas, newlines is safer.
+    return str.split(/[\s,，]+/).map(s => s.trim()).filter(s => /^\d{2}-\d{2}$/.test(s));
   },
 
   saveHolidayInfo() {
     try {
-      const yearData = JSON.parse(this.data.holidayInfoStr);
-      const fullInfo = JSON.parse(JSON.stringify(HolidayUtils.getHolidayInfo())); // Deep clone
+      const holidays = this._parseDates(this.data.holidaysStr);
+      const extraWorkdays = this._parseDates(this.data.extraWorkdaysStr);
+      
+      const yearData = { holidays, extraWorkdays };
+      const fullInfo = JSON.parse(JSON.stringify(HolidayUtils.getHolidayInfo())); 
       
       const country = this.data.editCountry;
       const year = this.data.editYear;
@@ -123,10 +140,14 @@ Page({
   },
 
   copyToClipboard() {
+    const data = {
+      holidays: this._parseDates(this.data.holidaysStr),
+      extraWorkdays: this._parseDates(this.data.extraWorkdaysStr)
+    };
     wx.setClipboardData({
-      data: this.data.holidayInfoStr,
+      data: JSON.stringify(data, null, 2),
       success: () => {
-        wx.showToast({ title: '已复制到剪贴板', icon: 'success' });
+        wx.showToast({ title: 'JSON已复制', icon: 'success' });
       }
     });
   },
@@ -137,12 +158,19 @@ Page({
         if (res.data) {
           try {
             const parsed = JSON.parse(res.data);
-            this.setData({ holidayInfoStr: JSON.stringify(parsed, null, 2) });
-            wx.showToast({ title: '导入成功，请保存', icon: 'success' });
+            if (parsed.holidays || parsed.extraWorkdays) {
+              this.setData({ 
+                holidaysStr: (parsed.holidays || []).join(' '),
+                extraWorkdaysStr: (parsed.extraWorkdays || []).join(' ')
+              });
+              wx.showToast({ title: '导入成功，请保存', icon: 'success' });
+            } else {
+              throw new Error('Invalid format');
+            }
           } catch (e) {
             wx.showModal({
               title: '导入失败',
-              content: '剪贴板内容不是有效的 JSON 格式。',
+              content: '剪贴板内容不是有效的休假 JSON 格式。',
               showCancel: false
             });
           }

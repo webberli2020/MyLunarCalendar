@@ -30,7 +30,7 @@
   </view>
 
   <view class="section">
-    <view class="section-title">三国休假数据配置 (JSON)</view>
+    <view class="section-title">三国休假数据配置</view>
     
     <view class="editor-selectors">
       <picker bindchange="onCountryChange" value="{{0}}" range="{{availableCountries}}">
@@ -51,12 +51,22 @@
     </view>
 
     <view class="editor-wrap">
+      <view class="editor-label">正式休假日 (MM-DD，空格或换行分隔)</view>
       <textarea 
-        class="json-editor" 
-        value="{{holidayInfoStr}}" 
+        class="date-editor" 
+        value="{{holidaysStr}}" 
         maxlength="-1" 
-        bindinput="onHolidayInput"
-        auto-height="{{false}}"
+        bindinput="onHolidaysInput"
+        placeholder="例如: 01-01 05-01 10-01"
+      />
+      
+      <view class="editor-label">调休补班日 (MM-DD，空格或换行分隔)</view>
+      <textarea 
+        class="date-editor" 
+        value="{{extraWorkdaysStr}}" 
+        maxlength="-1" 
+        bindinput="onExtraWorkdaysInput"
+        placeholder="例如: 01-26 02-08"
       />
     </view>
     <view class="btn-group main-btns">
