@@ -43,6 +43,11 @@ Page({
       });
       if (this.data._currentYear) {
         this.refreshSwiperData(this.data._currentYear, this.data._currentMonth);
+        // Refresh detail card with new region preference
+        if (this.data.selectedDate) {
+          const [y, m, d] = this.data.selectedDate.split('-').map(Number);
+          this.updateDetailCard(y, m, d);
+        }
       } else {
         this.initCalendar(new Date()); 
       }
@@ -198,11 +203,38 @@ Page({
   updateDetailCard(y, m, d) {
     const detailHoliday = HolidayUtils.getHolidays(y, m, d);
     const detailLunar = LunarUtils.getLunar(y, m, d);
+    
+    // Calculate work status text based on selected region
+    const region = this.data.selectedRegionCode || 'BR';
+    const statusKey = region.toLowerCase() + 'Status';
+    const status = detailHoliday[statusKey];
+    
+    const dateObj = new Date(y, m - 1, d);
+    const dayOfWeek = dateObj.getDay();
+    const isWeekendDirect = dayOfWeek === 0 || dayOfWeek === 6;
+    
+    let workStatusText = '';
+    const regionLabels = { 'CN': '[中]', 'US': '[美]', 'BR': '[巴]' };
+    const label = regionLabels[region] || '';
+    
+    if (status === 'rest') {
+      workStatusText = `${label}法定放假中 🏖️`;
+    } else if (status === 'work') {
+      workStatusText = `${label}法定周末补班 💼`;
+    } else {
+      if (isWeekendDirect) {
+        workStatusText = '周末休息';
+      } else {
+        workStatusText = '正常工作日';
+      }
+    }
 
     this.setData({ 
       selectedDetail: {
         holiday: detailHoliday,
-        lunar: detailLunar
+        lunar: detailLunar,
+        workStatusText: workStatusText,
+        isWork: status === 'work'
       }
     });
   },

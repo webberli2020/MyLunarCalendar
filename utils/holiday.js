@@ -33,18 +33,31 @@ syncWithStorage();
 
 const CN_FIXED = {
   "01-01": "元旦",
+  "1947-01-05": "YXR公历🎂",
+  "1973-02-18": "LWB公历🎂",
   "03-08": "妇女节",
   "05-01": "劳动节",
   "1919-05-04": "青年节",
   "06-01": "儿童节",
+  "1973-06-08": "ZXJ🎂",
   "1921-07-01": "建党节",
+  "2023-07-10": "ZGZ公历忌日🕯",
   "1927-08-01": "建军节",
-  "1945-09-03": "抗日战争胜利日",
+  "08-08": "台湾父亲节",
+  "1945-09-03": "抗战胜利日(抗日战争胜利纪念日)",
+  "1976-09-09": "毛泽东忌日",
   "09-10": "教师节",
   "09-30": "烈士纪念日",
   "1949-10-01": "国庆节",
-  "12-13": "国家公祭日",
-  "1893-12-26": "毛泽东诞辰"
+  "2001-10-04": "QQ🎂",
+  "2006-10-08": "ZZ🎂",
+  "1945-10-29": "WJY公历🎂",
+  "2025-11-01": "XSJ忌日🕯",
+  "1998-11-6": "结婚纪念日🎂",
+  "2020-11-14": "LK公历忌日🕯",
+  "1978-12-12": "ZMM🎂",
+  "12-13": "国家公祭日🕯(南京大屠杀死难者国家公祭日)",
+  "1893-12-26": "毛泽东🎂"
 };
 
 const CN_FIXED2 = {
@@ -109,7 +122,7 @@ const BR_FIXED = {
 
 class HolidayEngine {
   constructor() {
-    this.easterCache = {}; 
+    this.easterCache = {};
   }
 
   _getMMDD(month, day) {
@@ -124,7 +137,7 @@ class HolidayEngine {
   }
 
   _getLastDay(year, month, dayOfWeek) {
-    const lastDay = new Date(year, month, 0); 
+    const lastDay = new Date(year, month, 0);
     let diff = lastDay.getDay() - dayOfWeek;
     if (diff < 0) diff += 7;
     return lastDay.getDate() - diff;
@@ -132,7 +145,7 @@ class HolidayEngine {
 
   _getEaster(year) {
     if (this.easterCache[year]) return this.easterCache[year];
-    
+
     const a = year % 19;
     const b = Math.floor(year / 100);
     const c = year % 100;
@@ -145,7 +158,7 @@ class HolidayEngine {
     const m = Math.floor((a + 11 * h + 22 * l) / 451);
     const month = Math.floor((h + l - 7 * m + 114) / 31);
     const day = ((h + l - 7 * m + 114) % 31) + 1;
-    
+
     const easterDate = new Date(year, month - 1, day);
     this.easterCache[year] = easterDate;
     return easterDate;
@@ -211,9 +224,9 @@ class HolidayEngine {
         if (y !== null && targetYear >= y) {
           age = targetYear - y;
         } else if (y !== null && targetYear < y) {
-          isValid = false; 
+          isValid = false;
         }
-        
+
         if (isValid) {
           results.push({ name: db[key], age: age });
         }
@@ -231,10 +244,10 @@ class HolidayEngine {
     matches.forEach(item => {
       let rawName = item.name;
       let ageMatch = item.age;
-      
+
       let shortName = rawName;
       let extra = "";
-      
+
       // Parse parentheses if any
       let parenMatch = rawName.match(/^(.*?)\((.*)\)$/);
       if (parenMatch) {
@@ -244,7 +257,7 @@ class HolidayEngine {
 
       let fullName = shortName;
       let hasAgeObj = (ageMatch !== null && ageMatch > 0);
-      
+
       if (hasAgeObj) {
         fullName += `(${ageMatch}周年)`;
       }
@@ -264,7 +277,7 @@ class HolidayEngine {
   getHolidays(year, month, day) {
     const mm_dd = month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
     let result = {
-      cnHoliday: '', cnHolidayFull: '', cnStatus: '', 
+      cnHoliday: '', cnHolidayFull: '', cnStatus: '',
       usHoliday: '', usHolidayFull: '', usStatus: '',
       brHoliday: '', brHolidayFull: '', brStatus: ''
     };
@@ -284,7 +297,7 @@ class HolidayEngine {
     let cnMatch = this._matchFixed(CN_FIXED, year, month, day);
     if (cnMatch.length > 0) {
       let f = this._formatNames(cnMatch);
-      result.cnHoliday = (result.cnHoliday && result.cnHoliday !== f.short) ? `${result.cnHoliday}/${f.short}` : f.short; 
+      result.cnHoliday = (result.cnHoliday && result.cnHoliday !== f.short) ? `${result.cnHoliday}/${f.short}` : f.short;
       result.cnHolidayFull = (result.cnHolidayFull && !f.full.includes(result.cnHolidayFull)) ? `${result.cnHolidayFull} / ${f.full}` : f.full;
     }
 
@@ -304,7 +317,7 @@ class HolidayEngine {
     let usF = this._formatNames(usMatch);
     result.usHoliday = usF.short;
     result.usHolidayFull = usF.full;
-    
+
     // US Variable
     if (!result.usHoliday) {
       if (month === 1 && day === this._getNthDay(year, 1, 1, 3)) { result.usHoliday = "马丁路德金日"; result.usHolidayFull = "马丁路德金日(Martin Luther King Jr. Day)"; }
@@ -323,7 +336,7 @@ class HolidayEngine {
 
     // --- Dynamic Chinese Special Days (Sanfu, Sanjiu) ---
     const curDate = new Date(year, month - 1, day);
-    
+
     // Sanfu
     const summerSolstice = new Date(year, 5, LunarUtils._getTerm(year, 11)); // Summer Solstice
     const autumnBegins = new Date(year, 7, LunarUtils._getTerm(year, 14)); // Autumn Begins
@@ -331,9 +344,9 @@ class HolidayEngine {
     const zhongFu = this._getGengDayAfter(summerSolstice, 4);
     const moFu = this._getGengDayAfter(autumnBegins, 1);
 
-    if (this._isSameDay(curDate, touFu)) { result.cnHoliday += (result.cnHoliday?'/':'') + "初伏"; result.cnHolidayFull += (result.cnHolidayFull?' / ':'') + "初伏(三伏天开始)"; }
-    else if (this._isSameDay(curDate, zhongFu)) { result.cnHoliday += (result.cnHoliday?'/':'') + "中伏"; result.cnHolidayFull += (result.cnHolidayFull?' / ':'') + "中伏"; }
-    else if (this._isSameDay(curDate, moFu)) { result.cnHoliday += (result.cnHoliday?'/':'') + "末伏"; result.cnHolidayFull += (result.cnHolidayFull?' / ':'') + "末伏(三伏天结束)"; }
+    if (this._isSameDay(curDate, touFu)) { result.cnHoliday += (result.cnHoliday ? '/' : '') + "初伏"; result.cnHolidayFull += (result.cnHolidayFull ? ' / ' : '') + "初伏(三伏天开始)"; }
+    else if (this._isSameDay(curDate, zhongFu)) { result.cnHoliday += (result.cnHoliday ? '/' : '') + "中伏"; result.cnHolidayFull += (result.cnHolidayFull ? ' / ' : '') + "中伏"; }
+    else if (this._isSameDay(curDate, moFu)) { result.cnHoliday += (result.cnHoliday ? '/' : '') + "末伏"; result.cnHolidayFull += (result.cnHolidayFull ? ' / ' : '') + "末伏(三伏天结束)"; }
 
     // Sanjiu (Counting from Winter Solstice)
     const lastWinterSolstice = new Date(year - 1, 11, LunarUtils._getTerm(year - 1, 23));
@@ -345,8 +358,8 @@ class HolidayEngine {
       const dayInNine = (diffDays % 9) + 1;
       const nineNames = ["一九", "二九", "三九", "四九", "五九", "六九", "七九", "八九", "九九"];
       if (dayInNine === 1) {
-        result.cnHoliday += (result.cnHoliday?'/':'') + nineNames[nineIdx-1];
-        result.cnHolidayFull += (result.cnHolidayFull?' / ':'') + nineNames[nineIdx-1];
+        result.cnHoliday += (result.cnHoliday ? '/' : '') + nineNames[nineIdx - 1];
+        result.cnHolidayFull += (result.cnHolidayFull ? ' / ' : '') + nineNames[nineIdx - 1];
       }
     }
 
@@ -362,57 +375,57 @@ class HolidayEngine {
       const indigenousDay = this._getNthDay(year, 10, 1, 2);
       const nativeAmericanDay = this._getLastDay(year, 9, 5); // Last Friday of Sept
 
-      if (this._isSameDay(curDate, easter)) { 
-        result.usHoliday = "复活节"; 
-        result.usHolidayFull = "复活节(Easter,耶稣复活的日子；春分之后第一次满月后的第一个星期日)"; 
+      if (this._isSameDay(curDate, easter)) {
+        result.usHoliday = "复活节";
+        result.usHolidayFull = "复活节(Easter,耶稣复活的日子；春分之后第一次满月后的第一个星期日)";
       }
-      else if (month === 1 && day === this._getNthDay(year, 1, 1, 3)) { 
-        result.usHoliday = "马丁·路德·金纪念日"; 
-        result.usHolidayFull = "马丁·路德·金纪念日(MLK Jr. Day,纪念为黑人争取平等权利、以非暴力手段推动民权进步的领袖——马丁·路德·金牧师)"; 
+      else if (month === 1 && day === this._getNthDay(year, 1, 1, 3)) {
+        result.usHoliday = "马丁·路德·金纪念日";
+        result.usHolidayFull = "马丁·路德·金纪念日(MLK Jr. Day,纪念为黑人争取平等权利、以非暴力手段推动民权进步的领袖——马丁·路德·金牧师)";
       }
-      else if (month === 2 && day === this._getNthDay(year, 2, 1, 3)) { 
-        result.usHoliday = "总统日"; 
-        result.usHolidayFull = "总统日(Presidents' Day,也称华盛顿诞辰纪念日,纪念美国第一任总统乔治·华盛顿)"; 
+      else if (month === 2 && day === this._getNthDay(year, 2, 1, 3)) {
+        result.usHoliday = "总统日";
+        result.usHolidayFull = "总统日(Presidents' Day,也称华盛顿诞辰纪念日,纪念美国第一任总统乔治·华盛顿)";
       }
-      else if (month === 5 && day === this._getLastDay(year, 5, 1)) { 
-        result.usHoliday = "阵亡将士纪念日"; 
-        result.usHolidayFull = "阵亡将士纪念日(Memorial Day,悼念在服役期间为国家捐躯的美国男女官兵。)"; 
+      else if (month === 5 && day === this._getLastDay(year, 5, 1)) {
+        result.usHoliday = "阵亡将士纪念日";
+        result.usHolidayFull = "阵亡将士纪念日(Memorial Day,悼念在服役期间为国家捐躯的美国男女官兵。)";
       }
-      else if (month === 5 && day === motherDay) { 
-        result.usHoliday = "母亲节"; 
-        result.usHolidayFull = "母亲节(Mother's Day)"; 
+      else if (month === 5 && day === motherDay) {
+        result.usHoliday = "母亲节";
+        result.usHolidayFull = "母亲节(Mother's Day)";
       }
-      else if (month === 6 && day === fatherDay) { 
-        result.usHoliday = "父亲节"; 
-        result.usHolidayFull = "父亲节(Father's Day)"; 
+      else if (month === 6 && day === fatherDay) {
+        result.usHoliday = "父亲节";
+        result.usHolidayFull = "父亲节(Father's Day)";
       }
-      else if (month === 9 && day === laborDay) { 
-        result.usHoliday = "劳工节"; 
-        result.usHolidayFull = "劳工节(Labor Day,向所有为社会和国家做出贡献的劳动者表达敬意和感谢)"; 
+      else if (month === 9 && day === laborDay) {
+        result.usHoliday = "劳工节";
+        result.usHolidayFull = "劳工节(Labor Day,向所有为社会和国家做出贡献的劳动者表达敬意和感谢)";
       }
-      else if (month === 10 && day === indigenousDay) { 
-        result.usHoliday = "原住民日"; 
-        result.usHolidayFull = "原住民日(Indigenous Peoples' Day,之前称哥伦布日Columbus Day。现为纪念和致敬美国原住民的历史、文化与贡献的节日)"; 
+      else if (month === 10 && day === indigenousDay) {
+        result.usHoliday = "原住民日";
+        result.usHolidayFull = "原住民日(Indigenous Peoples' Day,之前称哥伦布日Columbus Day。现为纪念和致敬美国原住民的历史、文化与贡献的节日)";
       }
       else if (month === 9 && day === nativeAmericanDay) {
         result.usHoliday = "美国原住民节";
         result.usHolidayFull = "美国原住民节(Native American Day,加州节日，旨在替代“哥伦布日”，纪念在欧洲殖民者到来前就生活在美洲的全体原住民)";
       }
-      else if (month === 11 && day === thanksgivingDay) { 
-        result.usHoliday = "感恩节"; 
-        result.usHolidayFull = "感恩节(Thanksgiving Day,感恩节的由来始于1621年清教徒和原住民共享的一顿秋收大餐)"; 
+      else if (month === 11 && day === thanksgivingDay) {
+        result.usHoliday = "感恩节";
+        result.usHolidayFull = "感恩节(Thanksgiving Day,感恩节的由来始于1621年清教徒和原住民共享的一顿秋收大餐)";
       }
       else {
         // Black Friday and Cyber Monday
         const bfDate = new Date(year, 10, thanksgivingDay + 1);
         const cmDate = new Date(year, 10, thanksgivingDay + 4);
-        if (this._isSameDay(curDate, bfDate)) { 
-          result.usHoliday = "黑色星期五"; 
-          result.usHolidayFull = "黑色星期五(Black Friday,全年购物季正式开始的一天，以大幅折扣和海量抢购闻名。)"; 
+        if (this._isSameDay(curDate, bfDate)) {
+          result.usHoliday = "黑色星期五";
+          result.usHolidayFull = "黑色星期五(Black Friday,全年购物季正式开始的一天，以大幅折扣和海量抢购闻名。)";
         }
-        else if (this._isSameDay(curDate, cmDate)) { 
-          result.usHoliday = "网络星期一"; 
-          result.usHolidayFull = "网络星期一(Cyber Monday,黑五后的第一个星期一，主打线上商品折扣。)"; 
+        else if (this._isSameDay(curDate, cmDate)) {
+          result.usHoliday = "网络星期一";
+          result.usHolidayFull = "网络星期一(Cyber Monday,黑五后的第一个星期一，主打线上商品折扣。)";
         }
       }
     }
@@ -420,7 +433,7 @@ class HolidayEngine {
     // BR Variable
     if (!result.brHoliday) {
       const easter = this._getEaster(year);
-      
+
       const carnivalSat = this._addDays(easter, -50);
       const carnivalTue = this._addDays(easter, -47);
       const ashWednesday = this._addDays(easter, -46);
@@ -428,7 +441,7 @@ class HolidayEngine {
       const maundyThursday = this._addDays(easter, -3);
       const goodFriday = this._addDays(easter, -2);
       const holySaturday = this._addDays(easter, -1);
-      const corpusChristi = this._addDays(easter, 60); 
+      const corpusChristi = this._addDays(easter, 60);
 
       if (this._isSameDay(curDate, carnivalSat)) { result.brHoliday = "嘉年华开始"; result.brHolidayFull = "狂欢节开始(Carnival Saturday，狂欢节的庆祝从今天开始；复活节前50天。)"; }
       else if (this._isSameDay(curDate, carnivalTue)) { result.brHoliday = "嘉年华"; result.brHolidayFull = "狂欢节(Carnaval，也称狂欢节周二，实际上也是狂欢节最后一天。)"; }
@@ -440,9 +453,9 @@ class HolidayEngine {
       else if (this._isSameDay(curDate, easter)) { result.brHoliday = "复活节"; result.brHolidayFull = "复活节(Páscoa，基督教纪念耶稣基督复活的节日,象征重生与希望)"; }
       else if (this._isSameDay(curDate, corpusChristi)) { result.brHoliday = "基督圣体节"; result.brHolidayFull = "基督圣体节(Corpus Christi,庆祝和纪念圣体圣事。)"; }
       else if (month === 5 && day === this._getNthDay(year, 5, 0, 2)) { result.brHoliday = "母亲节"; result.brHolidayFull = "母亲节(Dia das Mães)"; }
-      else if (month === 11 && day === thanksgivingDay) { 
-        result.brHoliday = "感恩节"; 
-        result.brHolidayFull = "感恩节(Dia de Ação de Graças,受美国感恩节文化影响于1949年设立,侧重宗教仪式和家庭团聚)"; 
+      else if (month === 11 && day === thanksgivingDay) {
+        result.brHoliday = "感恩节";
+        result.brHolidayFull = "感恩节(Dia de Ação de Graças,受美国感恩节文化影响于1949年设立,侧重宗教仪式和家庭团聚)";
       }
     }
     return result;

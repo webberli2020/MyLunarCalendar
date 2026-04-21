@@ -52,8 +52,8 @@
         </view>
       </view>
       <view class="info-row">
-        <text class="info-label">考勤建议：</text>
-        <text class="info-value {{selectedDetail.holiday.cnStatus === 'work' ? 'highlight' : ''}}">{{selectedDetail.holiday.cnStatus === 'rest' ? '法定放假中 🏖️' : (selectedDetail.holiday.cnStatus === 'work' ? '法定周末补班 💼' : '正常工作日')}}</text>
+        <text class="info-label">考勤：</text>
+        <text class="info-value {{selectedDetail.isWork ? 'highlight' : ''}}">{{selectedDetail.workStatusText}}</text>
       </view>
     </view>
   </scroll-view>

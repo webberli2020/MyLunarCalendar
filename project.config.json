@@ -21,7 +21,7 @@
     "localPlugins": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
-    "condition": false,
+    "condition": {},
     "swc": false,
     "disableSWC": true,
     "babelSetting": {
